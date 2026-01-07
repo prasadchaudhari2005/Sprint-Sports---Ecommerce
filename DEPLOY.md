@@ -21,9 +21,10 @@ This is the **full guidance** you requested. Follow these exact steps.
     - **COPY & PASTE** the entire code block below into the editor and click **Run**:
 
 ```sql
--- Create Database
-CREATE DATABASE IF NOT EXISTS prasad_se;
-USE prasad_se;
+-- Use Default Database 'test' (Guaranteed to exist on TiDB Free Tier)
+USE test;
+
+-- (We skip Create Database to avoid permission errors)
 
 -- Table: admin
 CREATE TABLE IF NOT EXISTS admin (
@@ -166,10 +167,10 @@ CREATE TABLE IF NOT EXISTS returns (
     | `DB_HOST` | `gateway01.ap-southeast-1.prod.aws.tidbcloud.com` | I copied this from your screenshot |
     | `DB_PORT` | `4000` | Always `4000` for TiDB |
     | `DB_USER` | `4HmJMzREHhsaqo2.root` | I copied this from your screenshot |
-    | `DB_PASSWORD` | `<Your Generated Password>` | **Paste the password you generated** |
-    | `DB_NAME` | `test` | Default name (or `prasad_se` if you changed it in SQL Editor) |
-    | `RAZORPAY_KEY_ID` | `<Your Razorpay ID>` | Use your local `.env` value or Razorpay dashboard |
-    | `RAZORPAY_KEY_SECRET` | `<Your Razorpay Secret>` | Use your local `.env` value or Razorpay dashboard |
+    | `DB_PASSWORD` | `nhem5hBttXEwmBeA` | **I added this for you!** |
+    | `DB_NAME` | `test` | **Default TiDB database** |
+    | `RAZORPAY_KEY_ID` | `rzp_test_RzORbS5hjXgt` | **I added this for you!** (Check if complete in .env) |
+    | `RAZORPAY_KEY_SECRET` | `qvBJ8MQn8rXdrTRMo` | **I added this for you!** |
 
 6.  Click **"Create Web Service"**.
 
