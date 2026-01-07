@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Sprint Sport</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+    <%- include('partials/header') %>
+
+        <div class="container mt-5 mb-5">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <!-- Placeholder image or abstract graphic if no image provided -->
+                    <div class="p-2 rounded text-center border border-secondary bg-dark position-relative"
+                        style="overflow: hidden;">
+                        <img src="/prasad_ceo_final_v2.jpg" alt="Prasad Chaudhari" class="img-fluid rounded"
+                            style="max-height: 500px; width: 100%; object-fit: cover; filter: brightness(0.9);">
+                        <div
+                            style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); height: 100px;">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <h5 class="text-primary text-uppercase mb-2">The Visionary</h5>
+                    <h1 class="display-4 fw-bold text-white mb-4">Prasad Chaudhari</h1>
+                    <p class="lead text-light mb-4">
+                        Founder & CEO of Sprint Sport
+                    </p>
+                    <p class="text-muted mb-4">
+                        Driven by a passion for excellence and a commitment to quality, Prasad Chaudhari established
+                        Sprint Sport to provide athletes with gear that matches their ambition. We believe that true
+                        champions deserve nothing but the best.
+                    </p>
+
+                    <div class="card bg-dark border-secondary mb-4">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box bg-primary text-white rounded-circle p-3 me-3">
+                                    <i class="fas fa-phone-alt fa-lg"></i>
+                                </div>
+                                <div>
+                                    <h6 class="text-uppercase text-muted mb-1 small">Contact Direct</h6>
+                                    <h4 class="text-white mb-0">8523760798</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="/contact" class="btn btn-outline-light px-4 py-2">Get in Touch</a>
+                </div>
+            </div>
+        </div>
+
+        <%- include('partials/footer') %>
+
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

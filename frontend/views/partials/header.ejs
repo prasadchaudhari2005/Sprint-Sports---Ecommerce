@@ -1,0 +1,101 @@
+<!-- Header Partial -->
+<header class="header-area">
+    <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <a class="navbar-brand" href="/">Sprint<span>Sport</span></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/#products">New Drops</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
+                </ul>
+
+                <!-- Premium Search Bar -->
+                <form class="d-flex me-4 align-items-center premium-search-form" action="/" method="GET">
+                    <div class="premium-search-wrapper">
+                        <i class="fas fa-search search-icon"></i>
+                        <input class="premium-search-input" type="search" name="search" placeholder="Search..."
+                            value="<%= typeof searchTerm !== 'undefined' ? searchTerm : '' %>" autocomplete="off">
+                        <div class="search-glow"></div>
+                    </div>
+                </form>
+
+                <ul class="navbar-nav align-items-center">
+                    <% if (typeof user !=='undefined' && user) { %>
+
+
+                        <!-- Cart -->
+                        <li class="nav-item me-3">
+                            <a href="/cart" class="nav-link position-relative" title="Cart">
+                                <i class="fas fa-shopping-cart"></i>
+                                <span id="cart-badge"
+                                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger <%= (typeof cartCount !=='undefined' && cartCount > 0) ? '' : 'd-none' %>">
+                                    <%= (typeof cartCount !=='undefined' && cartCount> 0) ? cartCount : '' %>
+                                </span>
+                            </a>
+                        </li>
+
+                        <!-- Profile Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <div class="icon-btn btn-sm me-2"
+                                    style="background: linear-gradient(135deg, #00ff88, #00ccff); color: #000; font-weight: bold;">
+                                    <%= user.name ? user.name.charAt(0).toUpperCase() : 'U' %>
+                                </div>
+                                <span class="d-none d-lg-inline-block" style="font-weight: 500; font-size: 0.9rem;">
+                                    Hi, <%= user.name ? user.name.split(' ')[0] : ' User' %>
+                                </span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark"
+                                style="background: #1a1a1a; border: 1px solid #333; margin-top: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                                <li><a class="dropdown-item" href="/profile"><i
+                                            class="fas fa-user-circle me-2 text-primary"></i> My Profile</a></li>
+                                <li><a class="dropdown-item" href="/my-bills"><i
+                                            class="fas fa-box-open me-2 text-info"></i> My Orders</a></li>
+                                <li><a class="dropdown-item" href="/myreturns"><i
+                                            class="fas fa-undo me-2 text-warning"></i> My Returns</a></li>
+                                <li>
+                                    <hr class="dropdown-divider" style="border-color: #333;">
+                                </li>
+                                <li><a class="dropdown-item text-danger" href="/logout"><i
+                                            class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                            </ul>
+                        </li>
+                        <% } else { %>
+                            <li class="nav-item"><a href="/user_login" class="neon-btn btn-sm"
+                                    style="padding: 8px 20px; font-size: 0.8rem;">Sign In</a></li>
+                            <% } %>
+                </ul>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<!-- Login Required Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: #1a1a1a; border: 1px solid #333; color: #fff;">
+            <div class="modal-header" style="border-bottom: 1px solid #333;">
+                <h5 class="modal-title" id="loginModalLabel"
+                    style="color: #00ff88; text-transform: uppercase; letter-spacing: 1px;">Sign In Required</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <i class="fas fa-lock fa-3x mb-3" style="color: #00ccff;"></i>
+                <p class="lead mb-0" style="color: #a0a0a0;">Please sign in to add items to your cart.</p>
+            </div>
+            <div class="modal-footer" style="border-top: 1px solid #333;">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a href="/user_login" class="btn neon-btn" style="padding: 8px 20px;">Sign In</a>
+            </div>
+        </div>
+    </div>
+</div>

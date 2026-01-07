@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Returns - Sprint Sport</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body class="bg-dark text-white">
+
+    <%- include('partials/header') %>
+
+        <div class="container mt-5 mb-5" style="min-height: 60vh;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="section-title text-white">My Returns</h2>
+                <a href="/mybills" class="text-muted"><i class="fas fa-arrow-left"></i> Back to Orders</a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-dark table-striped table-hover align-middle" style="border: 1px solid #333;">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="text-primary">Return #</th>
+                            <th scope="col" class="text-primary">Bill ID</th>
+                            <th scope="col" class="text-primary">Item</th>
+                            <th scope="col" class="text-primary">Reason</th>
+                            <th scope="col" class="text-primary">Date Requested</th>
+                            <th scope="col" class="text-primary">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% returns.forEach(ret=> { %>
+                            <tr>
+                                <td>#<%= ret.return_id %>
+                                </td>
+                                <td>#<%= ret.bill_id %>
+                                </td>
+                                <td class="fw-bold">
+                                    <%= ret.product_name %>
+                                </td>
+                                <td class="text-muted small" style="max-width: 250px;">
+                                    <%= ret.reason %>
+                                </td>
+                                <td>
+                                    <%= new Date(ret.created_at).toLocaleDateString() %>
+                                </td>
+                                <td>
+                                    <% if (ret.status==='Approved' ) { %>
+                                        <span class="badge bg-success rounded-pill px-3"><i
+                                                class="fas fa-check-circle me-1"></i> Approved</span>
+                                        <% } else if (ret.status==='Rejected' ) { %>
+                                            <span class="badge bg-danger rounded-pill px-3"><i
+                                                    class="fas fa-times-circle me-1"></i> Rejected</span>
+                                            <% } else { %>
+                                                <span class="badge bg-warning text-dark rounded-pill px-3"><i
+                                                        class="fas fa-clock me-1"></i> Pending</span>
+                                                <% } %>
+                                </td>
+                            </tr>
+                            <% }) %>
+
+                                <% if (returns.length===0) { %>
+                                    <tr>
+                                        <td colspan="6" class="text-center py-5 text-muted">
+                                            <i class="fas fa-box-open fa-3x mb-3"></i>
+                                            <p>No return requests found.</p>
+                                        </td>
+                                    </tr>
+                                    <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <%- include('partials/footer') %>
+
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

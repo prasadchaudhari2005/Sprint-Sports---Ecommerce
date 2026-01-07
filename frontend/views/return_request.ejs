@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Return - Sprint Sport</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .split-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status-badge.eligible {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .status-badge.ineligible {
+            color: #ff4444;
+            border-color: #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+        }
+
+        .reason-container {
+            display: none;
+            /* Hidden by default, shown when checkbox checked */
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media(max-width: 991px) {
+            .split-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('partials/header') %>
+
+        <div class="container mt-5 mb-5">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold text-white text-uppercase">Return <span class="text-gradient">Center</span>
+                </h1>
+                <p class="text-muted">Select items to return and specify the reason for each.</p>
+            </div>
+
+            <form action="/return-request" method="POST" enctype="multipart/form-data" id="returnForm">
+                <div class="split-layout">
+                    <!-- LEFT COLUMN: Order Summary -->
+                    <div class="glass-panel p-4 position-sticky" style="top: 100px;">
+                        <h4 class="text-white mb-4"><i class="fas fa-receipt me-2 text-primary"></i> Order Details</h4>
+
+                        <div class="mb-3">
+                            <label class="text-muted text-xs text-uppercase">Order ID</label>
+                            <div class="text-white fw-bold fs-5">#<%= bill.bill_id %>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="text-muted text-xs text-uppercase">Date</label>
+                            <div class="text-white">
+                                <%= new Date(bill.bill_date).toLocaleDateString() %>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="text-muted text-xs text-uppercase">Status</label>
+                            <div>
+                                <% if(bill.status==='Delivered' ) { %>
+                                    <span class="badge bg-success">Delivered</span>
+                                    <% } else { %>
+                                        <span class="badge bg-warning text-dark">
+                                            <%= bill.status %>
+                                        </span>
+                                        <% } %>
+                            </div>
+                        </div>
+
+                        <hr class="border-secondary my-4">
+
+                        <!-- Refund Estimator -->
+                        <div class="text-center p-3 rounded bg-dark border border-secondary mb-3">
+                            <label class="text-muted text-xs text-uppercase mb-1">Estimated Refund</label>
+                            <h2 class="text-gradient fw-bold mb-0" id="totalRefund">₹0</h2>
+                        </div>
+
+                        <div class="alert alert-info bg-opacity-10 border-info text-info rounded-3 small">
+                            <i class="fas fa-info-circle me-1"></i> Refund will be initiated to your original payment
+                            method within 5-7 days after pickup.
+                        </div>
+                    </div>
+
+                    <!-- RIGHT COLUMN: Return Form -->
+                    <div class="glass-panel p-4">
+                        <input type="hidden" name="billId" value="<%= bill.bill_id %>">
+
+                        <h4 class="text-white mb-4">Select Items to Return</h4>
+
+                        <% if(items && items.length> 0) { %>
+                            <div class="vstack gap-3 mb-5">
+                                <% items.forEach(function(item) { %>
+                                    <!-- Item Card -->
+                                    <div class="card-hover glass-panel p-3 border border-secondary"
+                                        style="<%= !item.isEligible ? 'opacity: 0.6;' : '' %>">
+
+                                        <div class="d-flex align-items-start">
+                                            <!-- Checkbox -->
+                                            <div class="me-3 mt-2">
+                                                <% if(item.isEligible) { %>
+                                                    <input
+                                                        class="form-check-input bg-dark border-secondary item-checkbox"
+                                                        type="checkbox" name="selected_products" value="<%= item.id %>"
+                                                        data-id="<%= item.id %>" data-price="<%= item.price || 0 %>"
+                                                        style="transform: scale(1.3); cursor: pointer;">
+                                                    <% } else { %>
+                                                        <i class="fas fa-times-circle text-muted fs-5"></i>
+                                                        <% } %>
+                                            </div>
+
+                                            <!-- Image -->
+                                            <div class="bg-white rounded p-1 me-3" style="width: 80px; height: 80px;">
+                                                <img src="<%= item.img || '/images/no-image.png' %>" alt="Product"
+                                                    style="width: 100%; height: 100%; object-fit: contain;">
+                                            </div>
+
+                                            <!-- Info & Reason inputs -->
+                                            <div class="flex-grow-1">
+                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                    <h6 class="text-white mb-0">
+                                                        <%= item.name || 'Unknown Item' %>
+                                                    </h6>
+                                                    <% if(item.isEligible) { %>
+                                                        <span class="status-badge eligible">Eligible</span>
+                                                        <% } else { %>
+                                                            <span class="status-badge ineligible">
+                                                                <%= item.status %>
+                                                            </span>
+                                                            <% } %>
+                                                </div>
+
+                                                <div class="text-muted small mb-2">
+                                                    Price: ₹<%= item.price %> | Qty: <%= item.qty %>
+                                                </div>
+
+                                                <!-- Collapsible Reason Section -->
+                                                <% if(item.isEligible) { %>
+                                                    <div class="reason-container mt-3"
+                                                        id="reason_container_<%= item.id %>">
+                                                        <div
+                                                            class="p-3 rounded bg-black bg-opacity-25 border border-secondary">
+                                                            <div class="row g-2">
+                                                                <div class="col-4">
+                                                                    <label class="text-muted text-xs">Return Qty</label>
+                                                                    <select name="qty_<%= item.id %>"
+                                                                        class="premium-input w-100 py-1 px-2 qty-select"
+                                                                        data-id="<%= item.id %>">
+                                                                        <% for(let i=1; i<=item.availableQty; i++) { %>
+                                                                            <option value="<%= i %>">
+                                                                                <%= i %>
+                                                                            </option>
+                                                                            <% } %>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="col-8">
+                                                                    <label class="text-muted text-xs">Reason
+                                                                        Type</label>
+                                                                    <select name="reason_type_<%= item.id %>"
+                                                                        class="premium-input w-100 py-1 px-2" required
+                                                                        disabled id="reason_type_<%= item.id %>">
+                                                                        <option value="" selected disabled>Select...
+                                                                        </option>
+                                                                        <option value="Wrong Size">Wrong Size</option>
+                                                                        <option value="Defective">Defective/Damaged
+                                                                        </option>
+                                                                        <option value="Not as Described">Not as
+                                                                            Described</option>
+                                                                        <option value="Changed Mind">Changed Mind
+                                                                        </option>
+                                                                        <option value="Other">Other</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="col-12 mt-2">
+                                                                    <input type="text"
+                                                                        name="reason_details_<%= item.id %>"
+                                                                        class="premium-input w-100 py-1 px-2"
+                                                                        placeholder="Add specific details..." disabled
+                                                                        id="reason_details_<%= item.id %>">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <% } %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% }); %>
+                            </div>
+
+                            <!-- Common Proof Upload -->
+                            <% const hasEligible=items.some(i=> i.isEligible); %>
+                                <% if(hasEligible) { %>
+                                    <div class="mb-4">
+                                        <h5 class="text-white mb-3">Proof of Return</h5>
+                                        <div class="glass-panel p-3 border border-secondary text-center">
+                                            <i class="fas fa-cloud-upload-alt text-primary fa-2x mb-2"></i>
+                                            <br>
+                                            <label
+                                                class="btn btn-sm btn-outline-light position-relative overflow-hidden">
+                                                Upload Image
+                                                <input type="file" name="returnImage"
+                                                    class="position-absolute top-0 start-0 opacity-0" accept="image/*"
+                                                    required onchange="previewImage(this)">
+                                            </label>
+                                            <div id="file-name" class="text-muted small mt-2">No file selected</div>
+                                            <img id="img-preview" src="" class="mt-2 rounded"
+                                                style="max-height: 150px; display: none;">
+                                        </div>
+                                        <div class="form-text text-muted">Please upload a photo showing the item's
+                                            condition or defect.</div>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-premium w-100 py-3 fw-bold text-uppercase"
+                                        id="submitBtn" disabled>
+                                        Submit Return Request
+                                    </button>
+                                    <% } %>
+
+                                        <% } else { %>
+                                            <div class="text-center py-5">
+                                                <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                                                <p class="text-muted">No items found for this order.</p>
+                                                <a href="/mybills" class="btn btn-outline-light btn-sm">Back to
+                                                    Orders</a>
+                                            </div>
+                                            <% } %>
+
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <%- include('partials/footer') %>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+            <script>
+                // Client-side Logic for Interactivity
+                document.addEventListener('DOMContentLoaded', function () {
+                    const checkboxes = document.querySelectorAll('.item-checkbox');
+                    const submitBtn = document.getElementById('submitBtn');
+                    const refundDisplay = document.getElementById('totalRefund');
+
+                    checkboxes.forEach(cb => {
+                        cb.addEventListener('change', function () {
+                            const id = this.dataset.id;
+                            const reasonContainer = document.getElementById(`reason_container_${id}`);
+                            const inputs = reasonContainer.querySelectorAll('select, input');
+
+                            if (this.checked) {
+                                reasonContainer.style.display = 'block';
+                                inputs.forEach(input => input.disabled = false);
+                            } else {
+                                reasonContainer.style.display = 'none';
+                                inputs.forEach(input => input.disabled = true);
+                            }
+
+                            updateRefund();
+                            updateSubmitButton();
+                        });
+                    });
+
+                    document.querySelectorAll('.qty-select').forEach(sel => {
+                        sel.addEventListener('change', updateRefund);
+                    });
+
+                    function updateRefund() {
+                        let total = 0;
+                        checkboxes.forEach(cb => {
+                            if (cb.checked) {
+                                const price = parseFloat(cb.dataset.price);
+                                const id = cb.dataset.id;
+                                const qtyVal = document.querySelector(`select[name="qty_${id}"]`).value;
+                                total += price * parseInt(qtyVal);
+                            }
+                        });
+                        refundDisplay.innerText = '₹' + total;
+                    }
+
+                    function updateSubmitButton() {
+                        const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+                        if (submitBtn) submitBtn.disabled = !anyChecked;
+                    }
+                });
+
+                function previewImage(input) {
+                    const file = input.files[0];
+                    if (file) {
+                        document.getElementById('file-name').innerText = file.name;
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            const img = document.getElementById('img-preview');
+                            img.src = e.target.result;
+                            img.style.display = 'inline-block';
+                        }
+                        reader.readAsDataURL(file);
+                    }
+                }
+            </script>
+</body>
+
+</html>

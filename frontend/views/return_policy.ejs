@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Return Policy - Sprint Sport</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+    <%- include('partials/header') %>
+
+        <div class="hero-section" style="height: 40vh; min-height: 300px;">
+            <div class="hero-overlay"></div>
+            <div class="container hero-content text-center">
+                <div class="mb-3 text-start">
+                    <button onclick="history.back()" class="btn btn-outline-light btn-sm">
+                        <i class="fas fa-arrow-left me-2"></i> Back
+                    </button>
+                </div>
+                <h1><span>RETURN</span> POLICY</h1>
+                <p>Shop with confidence.</p>
+            </div>
+        </div>
+
+        <div class="container mt-5 mb-5">
+            <div class="product-details-container text-white">
+                <h2 class="text-primary mb-4">1. Return Eligibility</h2>
+                <p class="text-muted">
+                    You may return most new, unopened items within 30 days of delivery for a full refund. We also pay
+                    the return shipping costs if the return is a result of our error (you received an incorrect or
+                    defective item, etc.).
+                </p>
+
+                <h2 class="text-primary mb-4 mt-5">2. Refund Process</h2>
+                <p class="text-muted">
+                    You should expect to receive your refund within four weeks of giving your package to the return
+                    shipper, however, in many cases you will receive a refund more quickly. This time period includes
+                    the transit time for us to receive your return from the shipper (5 to 10 business days), the time it
+                    takes us to process your return once we receive it (3 to 5 business days), and the time it takes
+                    your bank to process our refund request (5 to 10 business days).
+                </p>
+
+                <h2 class="text-primary mb-4 mt-5">3. Exchanges</h2>
+                <p class="text-muted">
+                    If you need to exchange an item for a different size or color, please contact our support team. We
+                    will guide you through the process to ensure you get the right gear.
+                </p>
+
+                <h2 class="text-primary mb-4 mt-5">4. Damaged Items</h2>
+                <p class="text-muted">
+                    If you receive a damaged product, please report it to us within 48 hours of delivery with
+                    photographic evidence. We will arrange for a prompt replacement or refund.
+                </p>
+            </div>
+        </div>
+
+        <%- include('partials/footer') %>
+
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
