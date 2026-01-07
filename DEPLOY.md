@@ -1,56 +1,81 @@
-# Deployment Guide (Railway)
+# Deployment Guide (Free Forever)
 
-This guide explains how to deploy your application to **Railway** with MySQL and privacy settings.
+This guide explains how to deploy your application for **free** using **Render** (for the Node.js app) and **TiDB Cloud** (for the MySQL database).
 
 ## Prerequisites
-- A GitHub account (you already have this).
-- A [Railway](https://railway.app/) account (Sign up with GitHub).
+- A GitHub account.
+- A [Render](https://render.com/) account (Sign up with GitHub).
+- A [TiDB Cloud](https://tidbcloud.com/) account (Sign up with Google/GitHub - **No Credit Card Required**).
 
-## Steps
+---
 
-### 1. Connect to Railway
-1.  Log in to [Railway](https://railway.app/).
-2.  Click **"New Project"** > **"Deploy from GitHub repo"**.
-3.  Select your repository: `Sprint-Sports---Ecommerce`.
-4.  Click **"Deploy Now"**.
+## Step 1: Create a Free MySQL Database (TiDB Cloud)
+1.  Log in to [TiDB Cloud](https://tidbcloud.com/).
+2.  Click **"Create Cluster"**.
+3.  Select **"Serverless"** (This is the Free Forever plan).
+4.  Region: Choose the one closest to you (e.g., **Mumbai** if available, or Singapore).
+5.  Cluster Name: `sport-app-db`.
+6.  Click **"Create"**.
+7.  **Set Password**: It will ask you to set a password for the root user. **Copy this password!**
+8.  Click **"Connect"** (top right) to get your details:
+    - **Host**: (e.g., `gateway01.ap-southeast-1.prod.aws.tidbcloud.com`)
+    - **Port**: `4000`
+    - **User**: (e.g., `2RlOxxxx.root`)
 
-### 2. Add MySQL Database
-1.  In your project dashboard, click **"New"** (or right-click on the canvas).
-2.  Select **"Database"** > **"MySQL"**.
-3.  Railway will create a text database service. Wait for it to initialize.
+---
 
-### 3. Configure Environment Variables
-1.  Click on your **Node.js service** (the box with your repo name).
-2.  Go to the **"Variables"** tab.
-3.  Click **"New Variable"** multiple times to add the following:
+## Step 2: Import Your Database Schema
+You can check if TiDB has a "Chat2Query" or SQL Editor in the browser.
+1.  Go to the **"SQL Editor"** tab in TiDB Cloud.
+2.  Copy the contents of your `db/schema.sql` file.
+3.  Paste them into the editor and clicking **"Run"**.
 
-    | Variable Name | Value |
+*Alternatively*, usually you can connect via a local terminal:
+```bash
+mysql -u <USER> -h <HOST> -P 4000 -p --ssl-mode=VERIFY_IDENTITY --ssl-ca=/path/to/ca.pem
+```
+*(TiDB usually provides a connection string you can copy-paste).*
+
+---
+
+## Step 3: Deploy App to Render
+1.  Log in to [Render Dashboard](https://dashboard.render.com/).
+2.  Click **"New +"** > **"Web Service"**.
+3.  Connect your GitHub repository.
+4.  **Configure the Service**:
+    - **Name**: `sport-app`.
+    - **Region**: Singapore (closest to India).
+    - **Runtime**: `Node`.
+    - **Build Command**: `npm install`
+    - **Start Command**: `npm start`
+    - **Plan**: Select **"Free"**.
+
+5.  **Environment Variables**:
+    Add these in the "Environment Variables" section:
+
+    | Key | Value |
     | :--- | :--- |
-    | `PORT` | `8080` (or leave blank, Railway sets this automatically usually) |
-    | `DB_HOST` | `${{MySQL.MYSQLHOST}}` (Click "Reference" to select this) |
-    | `DB_USER` | `${{MySQL.MYSQLUSER}}` |
-    | `DB_PASSWORD` | `${{MySQL.MYSQLPASSWORD}}` |
-    | `DB_NAME` | `${{MySQL.MYSQL_DATABASE}}` |
-    | `DB_PORT` | `${{MySQL.MYSQLPORT}}` |
-    | `RAZORPAY_KEY_ID` | *Your actual Razorpay Key ID* |
-    | `RAZORPAY_KEY_SECRET` | *Your actual Razorpay Key Secret* |
+    | `PORT` | `10000` |
+    | `DB_HOST` | *Your TiDB Host* |
+    | `DB_USER` | *Your TiDB User* |
+    | `DB_PASSWORD` | *Your TiDB Password* |
+    | `DB_NAME` | `test` (Default TiDB DB name, or create a new one) |
+    | `DB_PORT` | `4000` |
+    | `RAZORPAY_KEY_ID` | *Your Razorpay Key ID* |
+    | `RAZORPAY_KEY_SECRET` | *Your Razorpay Key Secret* |
 
-    > **Note:** The `${{MySQL...}}` values are "Reference Variables". When typing the value, type `$` and select the variable from the dropdown Railway provides. This ensures you don't copy-paste sensitive passwords manually.
+    *Note:* TiDB requires a secure connection. Your `mysql2` driver usually handles this automatically, but if you see errors, ensure `ssl: { rejectUnauthorized: true }` is in your db config (it defaults to mostly working).
 
-### 4. Import Database Schema
-1.  Click on the **MySQL service**.
-2.  Go to the **"Data"** tab (or "Connect").
-3.  Copy the **"MySQL Connection URL"**.
-4.  Use a tool like **MySQL Workbench** or a CLI to connect to this remote database and run the contents of your `db/schema.sql` file to create the tables.
-    - *Alternatively*, you can use Railway's built-in query editor if available, or just connect via your local terminal:
-      ```bash
-      mysql -h <RAILWAY_HOST> -u <USER> -p<PASSWORD> -P <PORT> --default-character-set=utf8mb4 < db/schema.sql
-      ```
+6.  Click **"Create Web Service"**.
 
-### 5. Verify Deployment
-1.  Once variables are set, Railway usually triggers a redeploy. If not, go to "Deployments" and click "Redeploy".
-2.  Once the status is "Active", click the **Generated URL** to view your live site.
-3.  Test the "Buy Now" feature to verify Razorpay and Database connections.
+---
+
+## Step 4: Verify
+1.  Wait for Render to build (can take 5 mins).
+2.  Visit your new URL.
+3.  **Note**: Rentder Free Tier "sleeps" after 15 mins of inactivity. The first load might take 45 seconds.
+
+---
 
 ## Privacy Note
-Your passwords and keys are now stored safely in Railway's "Variables" section and are **NOT** in the GitHub code.
+All credentials are safely stored in Render's Environment Variables.
