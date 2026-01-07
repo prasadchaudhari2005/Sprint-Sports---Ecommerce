@@ -11,10 +11,10 @@ This is the **full guidance** you requested. Follow these exact steps.
     - Log in to your [TiDB Dashboard](https://tidbcloud.com/).
     - Click **"Connect"** (Top Right).
     - **COPY** the following values to a notepad:
-        - Host
-        - Port (4000)
-        - User
-        - Password
+        - **Host**: `gateway01.ap-southeast-1.prod.aws.tidbcloud.com`
+        - **Port**: `4000`
+        - **User**: `4HmJMzREHhsaqo2.root`
+        - **Password**: **Click the "Generate Password" button** in that popup! Copy it immediately.
 
 2.  **Create Tables:**
     - On TiDB, click **"SQL Editor"** (Left Sidebar).
@@ -163,11 +163,11 @@ CREATE TABLE IF NOT EXISTS returns (
     | Key | Value | Where to find it? |
     | :--- | :--- | :--- |
     | `PORT` | `10000` | Just type `10000` |
-    | `DB_HOST` | `<Your TiDB Host>` | Copied from TiDB Connect |
+    | `DB_HOST` | `gateway01.ap-southeast-1.prod.aws.tidbcloud.com` | I copied this from your screenshot |
     | `DB_PORT` | `4000` | Always `4000` for TiDB |
-    | `DB_USER` | `<Your TiDB User>` | Copied from TiDB Connect |
-    | `DB_PASSWORD` | `<Your TiDB Password>` | You set this (or reset it) |
-    | `DB_NAME` | `prasad_se` | From the SQL code above |
+    | `DB_USER` | `4HmJMzREHhsaqo2.root` | I copied this from your screenshot |
+    | `DB_PASSWORD` | `<Your Generated Password>` | **Paste the password you generated** |
+    | `DB_NAME` | `test` | Default name (or `prasad_se` if you changed it in SQL Editor) |
     | `RAZORPAY_KEY_ID` | `<Your Razorpay ID>` | Use your local `.env` value or Razorpay dashboard |
     | `RAZORPAY_KEY_SECRET` | `<Your Razorpay Secret>` | Use your local `.env` value or Razorpay dashboard |
 
