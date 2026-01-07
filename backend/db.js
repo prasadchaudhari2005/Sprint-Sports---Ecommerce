@@ -9,7 +9,9 @@ const pool = mysql.createPool({
   port: process.env.DB_PORT || 3306,
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
+  // Enable SSL for TiDB (required for cloud connections)
+  ssl: process.env.DB_HOST ? { rejectUnauthorized: false } : undefined
 });
 
 // Export a promise-wrapped version of the pool
