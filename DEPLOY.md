@@ -1,68 +1,51 @@
-# Deployment Guide (Render + Freesqldatabase)
+# Deployment Guide (Best Free Method: Render + TiDB)
 
-This guide explains how to deploy your application using **Render** (Node.js) and **Freesqldatabase** (MySQL).
+This is the **best free method** for your project.
+- **App Hosting**: Render (Free Tier, no credit card).
+- **Database**: TiDB Cloud (5GB Free, no credit card).
 
-## Prerequisites
-- A GitHub account.
-- A [Render](https://render.com/) account.
-- A [Freesqldatabase.com](https://www.freesqldatabase.com/) account.
+## Step 1: Get Database Details (TiDB)
+**You already have this!**
+1.  Go to your [TiDB Dashboard](https://tidbcloud.com/).
+2.  Click **"Connect"** (Top Right).
+3.  Copy these values:
+    - **Host**
+    - **User**
+    - **Password** (Reset if you forgot)
+    - **Port** (4000)
 
----
+## Step 2: Initialize Database
+1.  In TiDB Dashboard, clicking **"SQL Editor"** (Left Sidebar).
+2.  Copy your `db/schema.sql` code.
+3.  Paste it in the editor and click **Run**.
 
-## Step 1: Create Database (Freesqldatabase)
-1.  Go to [www.freesqldatabase.com](https://www.freesqldatabase.com/) and sign up.
-2.  After logging in, click **"Start Database"** (or "Create Database").
-3.  They will send you an **Email** with your database details:
-    - **Host** (e.g., `sql.freesqldatabase.com`)
-    - **Database Name** (e.g., `sql1234567`)
-    - **Username** (e.g., `sql1234567`)
-    - **Password**
-    - **Port**: `3306`
-
----
-
-## Step 2: Import Schema
-You can use the built-in phpMyAdmin provided by Freesqldatabase.
-1.  In the Freesqldatabase dashboard, click **"phpMyAdmin"**.
-2.  Log in with the credentials from the email.
-3.  Click on your database name on the left sidebar.
-4.  Click the **"Import"** tab (top menu).
-5.  Click **"Choose File"** and select your `db/schema.sql` file.
-6.  Click **"Go"** to run the script and create tables.
-
----
-
-## Step 3: Deploy App to Render
-1.  Log in to [Render Dashboard](https://dashboard.render.com/).
-2.  Click **"New +"** > **"Web Service"**.
-3.  Connect your GitHub repository.
-4.  **Configure**:
-    - **Name**: `sport-app`.
-    - **Region**: Singapore (or nearest).
-    - **Runtime**: `Node`.
+## Step 3: Deploy App (Render)
+1.  Go to [Render Dashboard](https://dashboard.render.com/).
+2.  **New +** -> **Web Service**.
+3.  Connect to your GitHub Repo: `Sprint-Sports---Ecommerce`.
+4.  **Settings**:
+    - **Name**: `sport-app`
+    - **Region**: Singapore
+    - **Runtime**: `Node`
     - **Build Command**: `npm install`
     - **Start Command**: `npm start`
-    - **Plan**: **"Free"**.
+    - **Plan**: `Free`
 
-5.  **Environment Variables**:
-    Add these in the "Environment Variables" section:
-
+5.  **Environment Variables** (Add these):
     | Key | Value |
     | :--- | :--- |
     | `PORT` | `10000` |
-    | `DB_HOST` | *Host from Email* |
-    | `DB_USER` | *Username from Email* |
-    | `DB_PASSWORD` | *Password from Email* |
-    | `DB_NAME` | *Database Name from Email* |
-    | `DB_PORT` | `3306` |
-    | `RAZORPAY_KEY_ID` | *Your Razorpay Key ID* |
-    | `RAZORPAY_KEY_SECRET` | *Your Razorpay Key Secret* |
+    | `DB_HOST` | *(Paste from TiDB)* |
+    | `DB_PORT` | `4000` |
+    | `DB_USER` | *(Paste from TiDB)* |
+    | `DB_PASSWORD` | *(Paste from TiDB)* |
+    | `DB_NAME` | `test` |
+    | `RAZORPAY_KEY_ID` | *(Your Key)* |
+    | `RAZORPAY_KEY_SECRET` | *(Your Secret)* |
 
-6.  Click **"Create Web Service"**.
+6.  Click **Create Web Service**.
 
----
-
-## Step 4: Verify
-1.  Wait for Render to build.
-2.  Visit the URL.
-3.  Use "Buy Now" to test the connection.
+## Verification
+- Wait 5 minutes for build.
+- Open the URL.
+- **Note**: The first load will take ~1 minute (Render Free Tier wakes up).
