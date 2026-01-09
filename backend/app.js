@@ -193,6 +193,36 @@ app.get("/", async (req, res, next) => {
 app.get("/register", (req, res) => {
     res.render("register");
 });
+
+app.post("/register", async (req, res, next) => {
+    const { name, age, phone_number, email, password, address } = req.body;
+
+    // Simple backend validation
+    if (!name || !email || !password || !phone_number || !age || !address) {
+        // Ideally you would pass an error message to the view
+        return res.send('<script>alert("All fields are required"); window.location.href="/register";</script>');
+    }
+
+    try {
+        // Check if user already exists
+        const checkSql = "SELECT * FROM users WHERE email = ?";
+        const [existingUser] = await db.query(checkSql, [email]);
+
+        if (existingUser.length > 0) {
+            return res.send('<script>alert("Email already registered"); window.location.href="/register";</script>');
+        }
+
+        // Insert new user
+        // Note: In a production app, passwords must be hashed (e.g., using bcrypt)
+        const sql = "INSERT INTO users (name, address, age, phone_number, email, password) VALUES (?, ?, ?, ?, ?, ?)";
+        await db.query(sql, [name, address, age, phone_number, email, password]);
+
+        // Redirect to user login on success
+        res.redirect("/user_login");
+    } catch (err) {
+        next(err);
+    }
+});
 app.get("/login", (req, res) => {
     // This page will show two buttons: "User Login" and "Admin Login"
     res.render("login_options");
@@ -343,35 +373,7 @@ app.get("/additems", (req, res) => {
 
 
 // Admin Return Management Routes
-app.get("/admin/returns", async (req, res, next) => {
-    if (!req.session.user || !req.session.user.isAdmin) return res.redirect("/admin_login");
-
-    const sql = `
-        SELECT r.*, u.name, u.email 
-        FROM returns r 
-        JOIN users u ON r.user_id = u.user_id 
-        ORDER BY r.created_at DESC
-    `;
-
-    try {
-        const [returns] = await db.query(sql);
-        res.render("admin_returns", { returns });
-    } catch (err) {
-        next(err);
-    }
-});
-
-app.post("/admin/return-status", async (req, res, next) => {
-    if (!req.session.user || !req.session.user.isAdmin) return res.redirect("/admin_login");
-    const { returnId, status } = req.body;
-
-    try {
-        await db.query("UPDATE returns SET status = ? WHERE return_id = ?", [status, returnId]);
-        res.redirect("/admin/returns");
-    } catch (err) {
-        next(err);
-    }
-});
+// Admin Return Management Routes handled in return_routes.js
 
 app.post("/additems", upload.single('image'), async (req, res, next) => {
     // Security check: Ensure only an admin can add items
@@ -1306,91 +1308,10 @@ app.post("/update-bill/:bill_id", async (req, res, next) => {
 });
 
 // User Return Request Routes
-app.get("/return-request/:billId", async (req, res, next) => {
-    if (!req.session.user) return res.redirect("/login");
-    const billId = req.params.billId;
-
-    // Fetch detailed bill info including product IDs and Names
-    const sql = `
-        SELECT 
-            b.*,
-            p1.product_name as name1,
-            p2.product_name as name2,
-            p3.product_name as name3
-        FROM bills b 
-        LEFT JOIN products p1 ON b.p1 = p1.product_id
-        LEFT JOIN products p2 ON b.p2 = p2.product_id
-        LEFT JOIN products p3 ON b.p3 = p3.product_id
-        WHERE b.bill_id = ? AND b.user_id = ?
-    `;
-
-    try {
-        const [bills] = await db.query(sql, [billId, req.session.user.user_id]);
-        if (bills.length === 0) return res.redirect("/mybills");
-
-        const bill = bills[0];
-        if (bill.status !== 'Delivered') return res.redirect("/mybills");
-
-        // Construct items array with ID and Name
-        const items = [];
-        if (bill.p1 && bill.name1) items.push({ id: bill.p1, name: bill.name1 });
-        if (bill.p2 && bill.name2) items.push({ id: bill.p2, name: bill.name2 });
-        if (bill.p3 && bill.name3) items.push({ id: bill.p3, name: bill.name3 });
-
-        res.render("return_request", {
-            user: req.session.user,
-            cartCount: req.session.cartCount || 0,
-            billId: billId,
-            items: items
-        });
-    } catch (err) {
-        next(err);
-    }
-});
-
-app.post("/return-request", upload.single('returnImage'), async (req, res, next) => {
-    if (!req.session.user) return res.redirect("/login");
-    const { billId, productName, reason } = req.body;
-
-    let imageUrl = null;
-    if (req.file) {
-        imageUrl = '/images/products/' + req.file.filename;
-        // We reuse the products folder or create a new one. 
-        // For simplicity reusing existing configured upload path if possible, 
-        // or just letting it go to defaults. 
-        // Ideally we should have a separate /images/returns folder but multer config 
-        // in this file seems to point to /public/images/products. 
-        // Let's stick to the configured path in multer.
-    }
-
-    const sql = `INSERT INTO returns (user_id, bill_id, product_name, reason, status, image_url) VALUES (?, ?, ?, ?, 'Requested', ?)`;
-
-    try {
-        await db.query(sql, [req.session.user.user_id, billId, productName, reason, imageUrl]);
-        res.render("success", {
-            msg: "Return request submitted successfully with evidence. We will review it shortly.",
-            user: req.session.user
-        });
-    } catch (err) {
-        next(err);
-    }
-});
+// User Return Request Routes handled in return_routes.js
 
 // My Returns Page
-app.get("/myreturns", async (req, res, next) => {
-    if (!req.session.user) return res.redirect("/login");
-
-    try {
-        const [returns] = await db.query("SELECT * FROM returns WHERE user_id = ? ORDER BY created_at DESC", [req.session.user.user_id]);
-        res.render("myreturns", {
-            user: req.session.user,
-            cartCount: req.session.cartCount || 0,
-            returns: returns
-        });
-    } catch (err) {
-        next(err);
-    }
-});
+// My Returns Page handled in return_routes.js
 // Admin: Show all products to manage
 app.get("/admin/manage-products", async (req, res, next) => {
     // Protect this route
